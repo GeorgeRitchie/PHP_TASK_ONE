@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 class Room 
 {
     function __construct($residentName, $bookedFrom, $bookedTo)
@@ -22,6 +25,8 @@ class Resident
     public $bookingTo;
 }
 
+require_once "DB.php";
+
 class Office
 {
     private const maxRooms = 5;
@@ -31,8 +36,12 @@ class Office
 
     public function __construct()
     {
-        $this->rooms[0] = new Room("Tom", time(), time());
-        /* $this->rooms[1] = new Room("Tom", time(), time());
+        $dataBase = new DB();
+
+        $this->rooms = $dataBase->ReadAllRooms();
+
+        /*$this->rooms[0] = new Room("Tom", time(), time());
+        $this->rooms[1] = new Room("Tom", time(), time());
         $this->rooms[2] = new Room("Tom", time(), time());
         $this->rooms[3] = new Room("Tom", time(), time());
         $this->rooms[4] = new Room("Tom", time(), time()); */
@@ -40,6 +49,21 @@ class Office
     
     public function IsRoomEmpty($roomNumber = 1)
     {
+        $today = date("Y-m-d");
+
+        if(isset($this->rooms[$roomNumber - 1]))
+        {
+            if($this->rooms[$roomNumber - 1]->bookedTo < $today)
+            {
+                $this->rooms[$roomNumber - 1] = null;
+                
+                $dataBase = new DB();
+                $dataBase->DeleteRoom($roomNumber-1);
+
+                $_SESSION["office"] = serialize($this);
+            }
+        }
+
         return !isset($this->rooms[$roomNumber - 1]) || $this->rooms[$roomNumber - 1] === null;
     }
 
@@ -68,6 +92,8 @@ class Office
         elseif($this->IsRoomEmpty($roomNumber))
         {
             $this->rooms[$roomNumber - 1]= new Room($newResident->residentName, $newResident->bookingFrom, $newResident->bookingTo);
+            $dataBase = new DB();
+            $dataBase->CreateRoom($this->rooms[$roomNumber-1], $roomNumber);
         }
         else
         {
@@ -77,9 +103,16 @@ class Office
 
     public function GetInfoAboutBookerInRoom($roomNumber)
     {
-        $lookindRoom = $this->rooms[$roomNumber - 1];
-        return "Booker name is " . $lookindRoom->residentName . "<br/>Room is booked from " .
-        $lookindRoom->bookedFrom . "<br/>Room is booked to " . $lookindRoom->bookedTo . "<br/>";
+        if(!$this->IsRoomEmpty($roomNumber))
+        {
+            $lookindRoom = $this->rooms[$roomNumber - 1];
+            return "Booker name is " . $lookindRoom->residentName . "<br/>Room is booked from " .
+            $lookindRoom->bookedFrom . "<br/>Room is booked to " . $lookindRoom->bookedTo . "<br/>";
+        }
+        else
+        {
+            return "Room is empty";
+        }
     }
 
     public function Notify($resident, $roomNumber)
