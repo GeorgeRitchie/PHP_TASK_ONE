@@ -1,9 +1,13 @@
 <?php
+    // session_start();
+    // session_destroy();
     session_start();
+    
     if(!isset($_SESSION["office"]))
     {
         include_once "TaskOne.php";
-        $_SESSION["office"] = Office::getInstance();
+        
+        $_SESSION["office"] = serialize(new Office());
     }
 
     if(isset($_POST["act"]))
@@ -11,15 +15,15 @@
         $value = htmlentities($_POST["act"]);
         if($value === "Check Room")
         {
-            header("Location: /TaskOne/CheckRoom.php");
+            header("Location: /TaskOne/PHP_TASK_ONE/CheckRoom.php");
         }
         elseif($value === "Book for new resident")
         {
-            header("Location: /TaskOne/CheckRoom.php");
+            header("Location: /TaskOne/PHP_TASK_ONE/bookroom.php");
         }
         elseif($value === "See all booked rooms")
         {
-            header("Location: /TaskOne/seeallbookedrooms.php");
+            header("Location: /TaskOne/PHP_TASK_ONE/seeallbookedrooms.php");
         }
     }
 ?>

@@ -26,27 +26,16 @@ class Office
 {
     private const maxRooms = 5;
     private $rooms = [null];
-    private static $_instance = null;
 
     public $TEMP;
 
-    private function __construct()
+    public function __construct()
     {
         $this->rooms[0] = new Room("Tom", time(), time());
-    }
-
-    public static function getInstance()
-    {
-        if(null === self::$_instance)
-        {
-            print_r(self::$_instance);
-            echo self::$_instance;
-            echo "creating new office";
-            self::$_instance = new self();
-        }
-
-        print_r(self::$_instance);
-        return self::$_instance;
+        /* $this->rooms[1] = new Room("Tom", time(), time());
+        $this->rooms[2] = new Room("Tom", time(), time());
+        $this->rooms[3] = new Room("Tom", time(), time());
+        $this->rooms[4] = new Room("Tom", time(), time()); */
     }
     
     public function IsRoomEmpty($roomNumber = 1)
@@ -72,17 +61,17 @@ class Office
 
     public function Book($newResident, $roomNumber)
     {
-        if($roomNumber === Office::maxRooms || $roomNumber >= Office::maxRooms)
+        if($roomNumber >= Office::maxRooms)
         {
-            throw new Exception("There is only 5 rooms in Office. Index of Last room is 4.");
+            throw new Exception("There is only 5 rooms in Office.");
         }
-        elseif($this->IsRoomEmptyInTime($roomNumber, $newResident->bookingFrom))
+        elseif($this->IsRoomEmpty($roomNumber))
         {
-            $this->rooms[$roomNumber]= new Room($newResident->residentName, $newResident->bookingFrom, $newResident->bookingTo);
+            $this->rooms[$roomNumber - 1]= new Room($newResident->residentName, $newResident->bookingFrom, $newResident->bookingTo);
         }
         else
         {
-            throw new Exception("The room $roomNumber is already booked by" . $this->GetInfoAboutBookerInRoom($roomNumber));
+            throw new Exception("The room $roomNumber is already booked by<br/>" . $this->GetInfoAboutBookerInRoom($roomNumber));
         }
     }
 
@@ -93,5 +82,11 @@ class Office
         $lookindRoom->bookedFrom . "<br/>Room is booked to " . $lookindRoom->bookedTo . "<br/>";
     }
 
+    public function Notify($resident, $roomNumber)
+    {
+        // это метод заглушка
+        echo "<script type='text/javascript'>alert(\"notify by phone number $resident->phoneNubmer: You, $resident->residentName, have booked room $roomNumber\")</script>";
+        echo "<script type='text/javascript'>alert(\"notify by email address $resident->eAddress: You, $resident->residentName, have booked room $roomNumber\")</script>";
+    }
 }
 ?>

@@ -20,18 +20,10 @@
 if(isset($_POST["roomNumber"]) && isset($_POST["bookingFrom"]))
 {
     include_once "TaskOne.php";
-    if(!isset($_SESSION["office"]))
-    {
-        throw new Exception("WHAT FUCK IS GOING");
-    }
-    $office = $_SESSION["office"];
+
+    $office = unserialize($_SESSION["office"]);
     $roomNumber = $_POST["roomNumber"];
     $bookingFrom = $_POST["bookingFrom"];
-
-    if($office->TEMP === $roomNumber)
-    echo "HHHHHHHHHHH $office->TEMP";
-    else
-    $office->TEMP = $roomNumber;
 
     if($office->IsRoomEmptyInTime($roomNumber, $bookingFrom))
     {

@@ -1,14 +1,18 @@
+<?
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 </head>
 <body>
+
 <?php
-    session_start();
     include_once "TaskOne.php";
 
-    $office = $_SESSION["office"];
+    $office = unserialize($_SESSION["office"]);
 
     for($i = 1; $i<=5 ; $i++)
     {
